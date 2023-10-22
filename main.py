@@ -21,6 +21,9 @@ async def read_items():
             <form method="POST">
                 <input type="text" name="long_url" value="https://www.google.com" />
                 <input type="submit">
+                <p>
+                <a href="/premium/">Try our premium option </a>
+                <p>
             </form>
         </body>
     </html>
