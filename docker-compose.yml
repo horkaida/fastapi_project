@@ -4,10 +4,16 @@ services:
   web_app:
     build: .
     ports:
-      - "8000:8000"
+      - "8001:8000"
     depends_on:
       - mongo
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
 
+  bot:
+    build: .
+    depends_on:
+      - mongo
+    command: python bot.py
 
   mongo:
     image: mongo

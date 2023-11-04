@@ -1,11 +1,9 @@
-import motor.motor_asyncio
 from fastapi import FastAPI, Form
-from typing import Annotated
-import uuid
+from typing import Annotated, Optional
 from fastapi.responses import RedirectResponse, HTMLResponse
 
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://root:example@localhost:27017')
-db = client.link_shortener
+from common import short_url_to_long, create_short_url
+from mongo_db import db
 
 app = FastAPI()
 
@@ -30,15 +28,14 @@ async def read_items():
     """
 
 @app.post("/")
-async def get_short_url(long_url:Annotated[str, Form()]):
-    short_url = str(uuid.uuid4())
-    new_link = await db.link.insert_one({"short_url":short_url, "long_url":long_url})
-    return short_url
+async def generate_short_url(long_url:Annotated[str, Form()]):
+    result = await create_short_url(long_url)
+    return result
 
 @app.get("/{short_url}")
 async def get_destination_url(short_url:str):
-    link_data = await db.link.find_one({"short_url":short_url})
-    return RedirectResponse(link_data['long_url'])
+    link_data = await short_url_to_long(short_url)
+    return RedirectResponse(link_data)
 
 
 @app.post("/{short_url}")
@@ -67,7 +64,7 @@ async def read_items():
     </html>
     """
 @app.post("/premium/", response_class=HTMLResponse)
-async def get_short_url(long_url:Annotated[str, Form()], premium_short_url:Annotated[str, Form()]):
+async def add_short_url(long_url:Annotated[str, Form()], premium_short_url:Annotated[str, Form()]):
     if await db.link.find_one({"short_url":premium_short_url}):
         return "This URL already exists"
     else:
