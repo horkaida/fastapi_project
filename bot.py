@@ -25,7 +25,7 @@ async def create_short(message: Message):
 @bot.message_handler(commands=['get_all'])
 async def get_user_url(message: Message):
     user_id = message.from_user.id
-    url_info = await get_all_user_urls(user_id+user_id)
+    url_info = await get_all_user_urls(user_id=user_id)
     all_urls = [f"{link['short_url']} -> {link['long_url']}" for link in url_info]
     await bot.send_message(message.chat.id, '\r\n'.join(all_urls)) if all_urls else 'You have no links'
 @bot.message_handler(func=lambda message: True)

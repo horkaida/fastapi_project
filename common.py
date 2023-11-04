@@ -19,5 +19,6 @@ async def short_url_to_long(short_url:str):
 
 
 async def get_all_user_urls(user_id):
-    link_data = await db.link.find({"user_id":user_id})
-    return link_data
+    link_data = db.link.find({"user_id":user_id})
+    result = [link async for link in link_data]
+    return result
